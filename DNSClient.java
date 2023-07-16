@@ -17,7 +17,8 @@ public class DNSClient {
             this.parseInputArguments(args);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new IllegalArgumentException("Usage: Client <resolver_ip> <resolver_port> <domain_name> [type=A] [timeout=5]");
+            throw new IllegalArgumentException(
+                    "Usage: Client <resolver_ip> <resolver_port> <domain_name> [type=A] [timeout=5]");
         }
     }
 
@@ -30,7 +31,7 @@ public class DNSClient {
 
     private void pollRequest() {
         try {
-            //Create Datagram socket and request object(s)
+            // Create Datagram socket and request object(s)
             DatagramSocket socket = new DatagramSocket();
             socket.setSoTimeout(timeout);
             InetAddress inetaddress = InetAddress.getByAddress(resolverIPBytes);
@@ -42,7 +43,7 @@ public class DNSClient {
             DatagramPacket requestPacket = new DatagramPacket(requestBytes, requestBytes.length, inetaddress, port);
             DatagramPacket responsePacket = new DatagramPacket(responseBytes, responseBytes.length);
 
-            //Send packet and time response
+            // Send packet and time response
             long startTime = System.currentTimeMillis();
             socket.send(requestPacket);
             socket.receive(responsePacket);
@@ -56,7 +57,7 @@ public class DNSClient {
 
         } catch (SocketException e) {
             System.out.println("ERROR: Could not create socket");
-        } catch (UnknownHostException e ) {
+        } catch (UnknownHostException e) {
             System.out.println("ERROR: Unknown host");
         } catch (SocketTimeoutException e) {
             System.out.println("ERROR: Socket Timeout");
@@ -95,7 +96,7 @@ public class DNSClient {
             String enhancedArg1 = argsList.get(3);
             String enhancedArg2 = argsList.get(4);
             if ((enhancedArg1.matches("[a-zA-Z]+") && enhancedArg2.matches("[a-zA-Z]+")) ||
-            (enhancedArg1.matches("\\d+") && enhancedArg2.matches("\\d+"))) {
+                    (enhancedArg1.matches("\\d+") && enhancedArg2.matches("\\d+"))) {
                 throw new IllegalArgumentException("ERROR: illegal enhanced arguments");
             }
             if (enhancedArg1.matches("[a-zA-Z]+")) { // type specified
