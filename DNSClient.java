@@ -12,7 +12,7 @@ public class DNSClient {
     private String domainName;
     private int port = 53;
 
-    public DNSClient(String args[]) {
+    public DNSClient(String[] args) {
         try {
             this.parseInputArguments(args);
         } catch (Exception e) {

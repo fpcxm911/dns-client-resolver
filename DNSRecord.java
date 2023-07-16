@@ -4,10 +4,28 @@ public class DNSRecord {
 	private byte[] queryClass;
 	private QueryType queryType;
 	private boolean auth;
+	private boolean truncated;
 	private int byteLength;
 
-	public DNSRecord(boolean auth) {
+	public boolean getAuth() {
+		return this.auth;
+	}
+
+	public boolean isTruncated() {
+		return this.truncated;
+	}
+
+	public boolean getTC() {
+		return this.truncated;
+	}
+
+	public void setTruncated(boolean TC) {
+		this.truncated = TC;
+	}
+
+	public DNSRecord(boolean auth, boolean truncated) {
 		this.auth = auth;
+		this.truncated = truncated;
 	}
 
 	public void outputRecord() {
@@ -30,23 +48,31 @@ public class DNSRecord {
 	}
 
 	private void outputATypeRecords() {
-		String authString = this.auth ? "auth" : "nonauth";
-		System.out.println("IP\t" + this.domain + "\t" + this.timeToLive + "\t" + authString);
+		String authString = this.auth ? "authoritative" : "not authoritative";
+		String tcString = this.truncated ? "truncated" : "not truncated";
+		System.out.println("A\t" + this.domain + "\t" + authString + "\t" + tcString);
 	}
 
 	private void outputNSTypeRecords() {
-		String authString = this.auth ? "auth" : "nonauth";
-		System.out.println("NS\t" + this.domain + "\t" + this.timeToLive + "\t" + authString);
+		String authString = this.auth ? "authoritative" : "not authoritative";
+		String tcString = this.truncated ? "truncated" : "not truncated";
+		System.out.println("NS\t" + this.domain + "\t" + authString + "\t" + tcString);
 	}
 
 	private void outputMXTypeRecords() {
-		String authString = this.auth ? "auth" : "nonauth";
-		System.out.println("MX\t" + this.domain + "\t" + mxPreference + "\t" + this.timeToLive + "\t" + authString);
+		String authString = this.auth ? "authoritative" : "not authoritative";
+		String tcString = this.truncated ? "truncated" : "not truncated";
+		System.out.println("MX\t" + this.domain + "\t" + authString + "\t" + tcString);
 	}
 
 	private void outputCNameTypeRecords() {
-		String authString = this.auth ? "auth" : "nonauth";
-		System.out.println("CNAME\t" + this.domain + "\t" + this.timeToLive + "\t" + authString);
+		String authString = this.auth ? "authoritative" : "not authoritative";
+		String tcString = this.truncated ? "truncated" : "not truncated";
+		System.out.println("CNAME\t" + this.domain + "\t" + authString + "\t" + tcString);
+	}
+
+	private void outputPTRTypeRecords() {
+		// TODO
 	}
 
 	public int getByteLength() {

@@ -136,7 +136,7 @@ public class DNSResponse {
     }
 
     private DNSRecord parseAnswer(int index) {
-        DNSRecord result = new DNSRecord(this.AA);
+        DNSRecord result = new DNSRecord(this.AA, this.TC);
 
         String domain = "";
         int countByte = index;
@@ -249,9 +249,9 @@ public class DNSResponse {
         }
         byte[] qType = { this.response[index + 1], this.response[index + 2] };
 
-        if (this.getQTYPEFromByteArray(qType) != this.queryType) {
-            throw new RuntimeException("ERROR\tResponse query type does not match request query type");
-        }
+        // if (this.getQTYPEFromByteArray(qType) != this.queryType) {
+        //     throw new RuntimeException("ERROR\tResponse query type does not match request query type");
+        // }
     }
 
     private rowDataEntry getDomainFromIndex(int index) {
