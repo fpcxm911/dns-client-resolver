@@ -1,4 +1,3 @@
-	
 public class DNSRecord {
 	 private int timeToLive, rdLength, mxPreference;
 	 private String name, domain;
