@@ -1,12 +1,12 @@
 import java.nio.ByteBuffer;
 import java.util.Random;
 
-public class DNSResquest {
+public class DNSRequest {
 
 	private String domain;
 	private QueryType qtype;
 
-	public DNSResquest(String domain, QueryType type) {
+	public DNSRequest(String domain, QueryType type) {
 		this.domain = domain;
 		this.qtype = type;
 	}

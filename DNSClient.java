@@ -36,7 +36,7 @@ public class DNSClient {
             DatagramSocket socket = new DatagramSocket();
             socket.setSoTimeout(timeout);
             InetAddress inetaddress = InetAddress.getByAddress(resolverIPBytes);
-            DNSResquest request = new DNSResquest(domainName, queryType);
+            DNSRequest request = new DNSRequest(domainName, queryType);
 
             byte[] requestBytes = request.getRequest();
             byte[] responseBytes = new byte[1024];

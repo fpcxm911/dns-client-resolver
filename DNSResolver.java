@@ -3,7 +3,6 @@ import java.net.DatagramSocket;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class DNSResolver {
     public QueryType queryType;
     private int port;
@@ -12,6 +11,7 @@ public class DNSResolver {
     public DNSResolver(String[] args) {
         try {
             this.parseInputArguments(args);
+            this.readHintFile();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new IllegalArgumentException(
@@ -19,6 +19,12 @@ public class DNSResolver {
             );
         }
 
+    }
+
+    private void readHintFile() {
+        // TODO read named.root
+        // ignore lines start with a semi-colon
+        // blank lines, and type AAAA record
     }
 
     private void parseInputArguments(String[] args) {
@@ -45,6 +51,7 @@ public class DNSResolver {
             // parsing client request
             byte[] clientRequestBytes = clientRequestPacket.getData();
             DNSMessage clientRequest = new DNSMessage(clientRequestBytes);
+            clientRequest.outputQuestion();
             System.out.println("Request received");
             // TODO send request iteratively to dns servers
             // TODO parsing dns response
