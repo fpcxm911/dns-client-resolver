@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Arrays;
@@ -5,13 +8,17 @@ import java.util.List;
 
 
 public class DNSResolver {
-    public QueryType queryType;
+    private QueryType queryType;
     private int port;
-    public static final int MAX_DNS_PACKET_SIZE = 512;
+    private static final int MAX_DNS_PACKET_SIZE = 1024;
+    private NameServer[] nsList;
+    private static final String HINT_FILE_PATH = "./named.root";
 
     public DNSResolver(String[] args) {
+        this.readHintFile();
         try {
             this.parseInputArguments(args);
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new IllegalArgumentException(
@@ -19,6 +26,18 @@ public class DNSResolver {
             );
         }
 
+    }
+
+    private void readHintFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader(HINT_FILE_PATH))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith(";") || line.isBlank() || line.contains("AAAA")) continue;
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void parseInputArguments(String[] args) {
