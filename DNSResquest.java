@@ -19,6 +19,7 @@ public class DNSResquest {
 		return request.array();
 	}
 
+
 	private byte[] createRequestHeader() {
 		ByteBuffer header = ByteBuffer.allocate(12);
 		byte[] randomID = new byte[2];
@@ -70,7 +71,8 @@ public class DNSResquest {
 	}
 
 	private char hexValueFromQueryType(QueryType type) {
-		// TODO replace with switch
+		// TODO for enhanced PTR
+		// replace with switch
 		// switch(type) {
 		// case A:
 		// return '1';

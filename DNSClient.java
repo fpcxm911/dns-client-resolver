@@ -5,12 +5,12 @@ import java.util.List;
 public class DNSClient {
 
     public QueryType queryType = QueryType.A;
-    public int MAX_DNS_PACKET_SIZE = 512;
+    public static final int MAX_DNS_PACKET_SIZE = 512;
     private int timeout = 5000;
     private byte[] resolverIPBytes = new byte[4];
     String resolverIPString;
     private String domainName;
-    private int port = 53;
+    private int port;
 
     public DNSClient(String[] args) {
         try {
@@ -18,7 +18,8 @@ public class DNSClient {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new IllegalArgumentException(
-                    "Usage: Client <resolver_ip> <resolver_port> <domain_name> [type=A] [timeout=5]");
+                "Usage: Client <resolver_ip> <resolver_port> <domain_name> [type=A] [timeout=5]"
+            );
         }
     }
 
@@ -52,7 +53,7 @@ public class DNSClient {
 
             System.out.println("Response received after " + (endTime - startTime) + " ms");
 
-            DNSResponse response = new DNSResponse(responsePacket.getData(), requestBytes.length, queryType);
+            DNSMessage response = new DNSMessage(responsePacket.getData(), requestBytes.length, queryType);
             response.outputResponse();
 
         } catch (SocketException e) {

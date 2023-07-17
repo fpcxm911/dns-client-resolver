@@ -2,7 +2,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
-public class DNSResponse {
+public class DNSMessage {
     private byte[] response;
     private byte[] ID;
     private boolean QR, AA, TC, RD, RA;
@@ -11,12 +11,24 @@ public class DNSResponse {
     private DNSRecord[] additionalRecords;
     private QueryType queryType;
     private boolean noRecords = false;
+    private String QueryDomainName;
 
-    public DNSResponse(byte[] response, int requestSize, QueryType queryType) {
-        this.response = response;
+    public DNSMessage(byte[] messageBytes) {
+        // contructor DNSMessage for DNS request
+        this.response = messageBytes;
+        this.parseHeader();
+
+        // parse Question section
+        this.parseQuestion();
+        
+    }
+
+
+    public DNSMessage(byte[] messageBytes, int requestSize, QueryType queryType) {
+        this.response = messageBytes;
         this.queryType = queryType;
 
-        this.validateResponseQuestionType();
+        // this.validateResponseQuestionType();
         this.parseHeader();
 
         answerRecords = new DNSRecord[ANCount];
@@ -26,7 +38,6 @@ public class DNSResponse {
             offSet += answerRecords[i].getByteLength();
         }
 
-        // ns count even though we don't do anything
         for (int i = 0; i < NSCount; i++) {
             offSet += parseAnswer(offSet).getByteLength();
         }
@@ -43,6 +54,7 @@ public class DNSResponse {
         }
 
         this.validateQueryTypeIsResponse();
+        
     }
 
     public void outputResponse() {
@@ -67,6 +79,7 @@ public class DNSResponse {
             }
         }
     }
+    
 
     private void checkRCodeForErrors() {
         switch (this.RCode) {
@@ -133,6 +146,12 @@ public class DNSResponse {
         byte[] ARCount = { response[10], response[11] };
         wrapped = ByteBuffer.wrap(ARCount);
         this.ARCount = wrapped.getShort();
+    }
+
+
+    private void parseQuestion() {
+        int offset = 12; // question section starts from 12 bytes in the message
+        // TODO
     }
 
     private DNSRecord parseAnswer(int index) {
@@ -240,19 +259,19 @@ public class DNSResponse {
         }
     }
 
-    private void validateResponseQuestionType() {
-        // Question starts at byte 13 (indexed at 11)
-        int index = 12;
+    // private void validateResponseQuestionType() {
+    //     // Question starts at byte 13 (indexed at 11)
+    //     int index = 12;
 
-        while (this.response[index] != 0) {
-            index++;
-        }
-        byte[] qType = { this.response[index + 1], this.response[index + 2] };
+    //     while (this.response[index] != 0) {
+    //         index++;
+    //     }
+    //     byte[] qType = { this.response[index + 1], this.response[index + 2] };
 
-        // if (this.getQTYPEFromByteArray(qType) != this.queryType) {
-        //     throw new RuntimeException("ERROR\tResponse query type does not match request query type");
-        // }
-    }
+    //     // if (this.getQTYPEFromByteArray(qType) != this.queryType) {
+    //     //     throw new RuntimeException("ERROR\tResponse query type does not match request query type");
+    //     // }
+    // }
 
     private rowDataEntry getDomainFromIndex(int index) {
         rowDataEntry result = new rowDataEntry();
@@ -310,11 +329,9 @@ public class DNSResponse {
                 return QueryType.CNAME;
             } else {
                 return QueryType.OTHER;
-                // throw new RuntimeException("ERROR\tUnrecognized query type in response");
             }
         } else {
             return QueryType.OTHER;
-            // throw new RuntimeException("ERROR\tUnrecognized query type in response");
         }
     }
 }
