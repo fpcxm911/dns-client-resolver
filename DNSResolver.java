@@ -3,22 +3,21 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
 public class DNSResolver {
-    private QueryType queryType;
     private int port;
     private static final int MAX_DNS_PACKET_SIZE = 1024;
-    private NameServer[] nsList;
+    private ArrayList<DNSRecord> nsList;
     private static final String HINT_FILE_PATH = "./named.root";
 
     public DNSResolver(String[] args) {
         this.readHintFile();
         try {
             this.parseInputArguments(args);
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new IllegalArgumentException(
@@ -33,7 +32,21 @@ public class DNSResolver {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.startsWith(";") || line.isBlank() || line.contains("AAAA")) continue;
-                System.out.println(line);
+                String[] records = line.split("\\s+");
+                String name = records[0];
+                QueryType qtype;
+                switch(records[2]) {
+                    case "NS":
+                        qtype = QueryType.NS;
+                        break;
+                    case "A":
+                        qtype = QueryType.A;
+                        break;
+                    default:
+                        throw new RuntimeException("Something wrong when parsing named.root file");
+                }
+                String domainIp = records[3];
+                nsList.add(new DNSRecord(name, domainIp, qtype));
             }
         } catch (IOException e) {
             e.printStackTrace();

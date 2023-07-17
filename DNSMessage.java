@@ -200,16 +200,16 @@ public class DNSMessage {
         countByte += 2;
         switch (result.getQueryType()) {
             case A:
-                result.setDomain(parseATypeRDATA(rdLength, countByte));
+                result.setDomainIP(parseATypeRDATA(rdLength, countByte));
                 break;
             case NS:
-                result.setDomain(parseNSTypeRDATA(rdLength, countByte));
+                result.setDomainIP(parseNSTypeRDATA(rdLength, countByte));
                 break;
             case MX:
-                result.setDomain(parseMXTypeRDATA(rdLength, countByte, result));
+                result.setDomainIP(parseMXTypeRDATA(rdLength, countByte, result));
                 break;
             case CNAME:
-                result.setDomain(parseCNAMETypeRDATA(rdLength, countByte));
+                result.setDomainIP(parseCNAMETypeRDATA(rdLength, countByte));
                 break;
             case OTHER:
                 break;

@@ -1,12 +1,21 @@
 public class DNSRecord {
 	private int timeToLive, rdLength, mxPreference;
-	private String name, domain;
+	private String name, domainIP;
 	private byte[] queryClass;
 	private QueryType queryType;
 	private boolean auth;
 	private boolean truncated;
 	private int byteLength;
 
+	public DNSRecord(boolean auth, boolean truncated) {
+		this.auth = auth;
+		this.truncated = truncated;
+	}
+	public DNSRecord(String name, String domainIP, QueryType queryType) {
+		this.name = name;
+		this.domainIP = domainIP;
+		this.queryType = queryType;
+	}
 	public boolean getAuth() {
 		return this.auth;
 	}
@@ -23,10 +32,6 @@ public class DNSRecord {
 		this.truncated = TC;
 	}
 
-	public DNSRecord(boolean auth, boolean truncated) {
-		this.auth = auth;
-		this.truncated = truncated;
-	}
 
 	public void outputRecord() {
 		switch (this.queryType) {
@@ -50,28 +55,28 @@ public class DNSRecord {
 	private void outputATypeRecords() {
 		String authString = this.auth ? "authoritative" : "non-authoritative";
 		String tcString = this.truncated ? "truncated" : "not-truncated";
-		String resultLine = ("A\t" + this.domain + "\t" + authString + "\t" + tcString);
+		String resultLine = ("A\t" + this.domainIP + "\t" + authString + "\t" + tcString);
 		System.out.println(formatColumns(resultLine));
 	}
 
 	private void outputNSTypeRecords() {
 		String authString = this.auth ? "authoritative" : "non-authoritative";
 		String tcString = this.truncated ? "truncated" : "not-truncated";
-		String resultLine = ("NS\t" + this.domain + "\t" + authString + "\t" + tcString);
+		String resultLine = ("NS\t" + this.domainIP + "\t" + authString + "\t" + tcString);
 		System.out.println(formatColumns(resultLine));
 	}	
 
 	private void outputMXTypeRecords() {
 		String authString = this.auth ? "authoritative" : "non-authoritative";
 		String tcString = this.truncated ? "truncated" : "not-truncated";
-		String resultLine = "MX\t" + this.domain + "\t" + authString + "\t" + tcString;
+		String resultLine = "MX\t" + this.domainIP + "\t" + authString + "\t" + tcString;
 		System.out.println(formatColumns(resultLine));
 	}
 
 	private void outputCNameTypeRecords() {
 		String authString = this.auth ? "authoritative" : "non-authoritative";
 		String tcString = this.truncated ? "truncated" : "not-truncated";
-		String resultLine = ("CNAME\t" + this.domain + "\t" + authString + "\t" + tcString);
+		String resultLine = ("CNAME\t" + this.domainIP + "\t" + authString + "\t" + tcString);
 		System.out.println(formatColumns(resultLine));
 	}
 	
@@ -79,7 +84,7 @@ public class DNSRecord {
 		// TODO Enhanced for PTR records
 		String authString = this.auth ? "authoritative" : "non-authoritative";
 		String tcString = this.truncated ? "truncated" : "not-truncated";
-		String resultLine = ("PTR\t" + this.domain + "\t" + authString + "\t" + tcString);
+		String resultLine = ("PTR\t" + this.domainIP + "\t" + authString + "\t" + tcString);
 		System.out.println(formatColumns(resultLine));
 	}
 	private static String formatColumns(String line) {
@@ -128,12 +133,12 @@ public class DNSRecord {
 		this.name = name;
 	}
 
-	public String getDomain() {
-		return domain;
+	public String getDomainIP() {
+		return domainIP;
 	}
 
-	public void setDomain(String domain) {
-		this.domain = domain;
+	public void setDomainIP(String domain) {
+		this.domainIP = domain;
 	}
 
 	public byte[] getQueryClass() {
