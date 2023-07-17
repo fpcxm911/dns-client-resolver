@@ -11,13 +11,14 @@ import java.util.List;
 public class DNSResolver {
     private int port;
     private static final int MAX_DNS_PACKET_SIZE = 1024;
-    private ArrayList<DNSRecord> nsList;
+    private ArrayList<DNSRecord> nsList = new ArrayList<>();
     private static final String HINT_FILE_PATH = "./named.root";
 
     public DNSResolver(String[] args) {
         this.readHintFile();
         try {
             this.parseInputArguments(args);
+            this.receiveAndResolve();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new IllegalArgumentException(
@@ -66,7 +67,7 @@ public class DNSResolver {
         }
     }
 
-    public void run() throws Exception {
+    public void receiveAndResolve() throws Exception {
         DatagramSocket socket = new DatagramSocket(port);
         while (true) {
             // create a datagrampacket to store client request from udp socket
@@ -78,12 +79,19 @@ public class DNSResolver {
             byte[] clientRequestBytes = clientRequestPacket.getData();
             DNSMessage clientRequest = new DNSMessage(clientRequestBytes);
             System.out.println("Request received");
-            // TODO send request iteratively to dns servers
-            // TODO parsing dns response
-            // TODO when reach desired result, return the dns reponse to client
+            parseClientQueryAndPrint();
+            resolve();
 
 
         }
+    }
+
+    private void parseClientQueryAndPrint() {
+        // TODO parse client request
+    }
+
+    private void resolve() {
+        // TODO resovle the dns query from client
     }
 
 

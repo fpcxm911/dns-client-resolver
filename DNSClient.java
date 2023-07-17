@@ -91,7 +91,7 @@ public class DNSClient {
             if (enhancedArg.matches("[a-zA-Z]+")) { // type specified
                 parseQType(enhancedArg.toLowerCase());
             } else if (enhancedArg.matches("\\d+")) { // timeout specified
-                timeout = Integer.parseInt(enhancedArg);
+                timeout = Integer.parseInt(enhancedArg)*1000;
             }
         } else if (argsList.size() == 5) { // two enhanced arguments
             String enhancedArg1 = argsList.get(3);
