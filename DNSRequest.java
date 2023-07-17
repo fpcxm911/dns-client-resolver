@@ -1,12 +1,12 @@
 import java.nio.ByteBuffer;
 import java.util.Random;
 
-public class DNSResquest {
+public class DNSRequest {
 
 	private String domain;
 	private QueryType qtype;
 
-	public DNSResquest(String domain, QueryType type) {
+	public DNSRequest(String domain, QueryType type) {
 		this.domain = domain;
 		this.qtype = type;
 	}
@@ -15,10 +15,9 @@ public class DNSResquest {
 		int qNameLength = getQNameLength();
 		ByteBuffer request = ByteBuffer.allocate(12 + 5 + qNameLength);
 		request.put(createRequestHeader());
-		request.put(createQuestionHeader(qNameLength));
+		request.put(createQuestionSection(qNameLength));
 		return request.array();
 	}
-
 
 	private byte[] createRequestHeader() {
 		ByteBuffer header = ByteBuffer.allocate(12);
@@ -46,44 +45,46 @@ public class DNSResquest {
 		return byteLength;
 	}
 
-	private byte[] createQuestionHeader(int qNameLength) {
+	private byte[] createQuestionSection(int qNameLength) {
 		ByteBuffer question = ByteBuffer.allocate(qNameLength + 5);
 
-		// first calculate how many bytes we need so we know the size of the array
+		// first calculate how many bytes needed so we know the size of the array
 		String[] items = domain.split("\\.");
 		for (int i = 0; i < items.length; i++) {
 			question.put((byte) items[i].length());
 			for (int j = 0; j < items[i].length(); j++) {
 				question.put((byte) ((int) items[i].charAt(j)));
-
 			}
 		}
-
 		question.put((byte) 0x00);
+
 
 		// Add Query Type
 		question.put(hexStringToByteArray("000" + hexValueFromQueryType(qtype)));
 		question.put((byte) 0x00);
-		// Add Query Class - always 0x0001 for internet addresses
+
+		// Add Query Class IN
 		question.put((byte) 0x0001);
 
 		return question.array();
 	}
 
 	private char hexValueFromQueryType(QueryType type) {
-		// TODO for enhanced PTR
+		// TODO for enhanced for other types of query
 		// replace with switch
-		// switch(type) {
-		// case A:
-		// return '1';
-		// case NS:
-		// return '2';
-		// case CNAME:
-		// return '5';
-		// case PTR:
-		// return 'C';
-		// default:
-		// break;
+		// switch (type) {
+		// 	case A:
+		// 		return '1';
+		// 	case NS:
+		// 		return '2';
+		// 	case CNAME:
+		// 		return '5';
+		// 	case PTR:
+		// 		return 'C';
+		// 	case MX:
+		// 		return 'F';
+		// 	default:
+		// 		return 'F';
 		// }
 
 		if (type == QueryType.A) {

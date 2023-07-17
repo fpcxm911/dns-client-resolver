@@ -79,19 +79,25 @@ public class DNSResolver {
             byte[] clientRequestBytes = clientRequestPacket.getData();
             DNSMessage clientRequest = new DNSMessage(clientRequestBytes);
             System.out.println("Request received");
-            parseClientQueryAndPrint();
+            parseClientQueryAndPrint(clientRequest);
             resolve();
 
 
         }
     }
 
-    private void parseClientQueryAndPrint() {
-        // TODO parse client request
+    private void parseClientQueryAndPrint(DNSMessage clientRequest) {
+        // TODO 18/07
+        String queryDomainName = clientRequest.getQueryDomainName();
+        QueryType queryType = clientRequest.getQueryType();
+        System.out.println("====>Client Request<====");
+        System.out.println("Domain:\t" + queryDomainName);
+        System.out.println("QueryType:\t" + queryType);
+
     }
 
     private void resolve() {
-        // TODO resovle the dns query from client
+        // TODO 18/07
     }
 
 

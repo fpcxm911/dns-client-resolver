@@ -9,9 +9,9 @@ public class DNSMessage {
     private int RCode, QDCount, ANCount, NSCount, ARCount;
     private DNSRecord[] answerRecords;
     private DNSRecord[] additionalRecords;
-    private QueryType queryType;
+    private QueryType queryType = QueryType.A;
     private boolean noRecords = false;
-    private String QueryDomainName;
+    private String queryDomainName;
 
     public DNSMessage(byte[] messageBytes) {
         // contructor DNSMessage for DNS request
@@ -19,8 +19,7 @@ public class DNSMessage {
         this.parseHeader();
 
         // parse Question section
-        this.parseQuestion();
-        
+        this.parseQuestion();        
     }
 
 
@@ -150,9 +149,83 @@ public class DNSMessage {
 
 
     private void parseQuestion() {
+        // get the QueryDomainName and QueryType for class variable
+
+
         int offset = 12; // question section starts from 12 bytes in the message
-        // TODO
+
+        // get QName (domain main) in question section of the message
+        offset += parseQuestionQName();
+
+        // get QType
+        byte[] qTypeBytes = new byte[] {response[offset], response[offset+1]};
+        int qtypeValue = (qTypeBytes[1] & 0xFF);
+        setQueryTypeFromValue(qtypeValue);
+
+
+        // get QClass
+        // offset += 2;
+        // byte[] qClassBytes = new byte[] {response[offset], response[offset+1]};
+        
     }
+    private void setQueryTypeFromValue(int qtypeValue) {
+        // TODO Enhanced for different query type
+        // switch(type) {
+        //     case "1":
+        //         this.queryType = QueryType.A;
+        //         break;
+        //     case "2":
+        //         this.queryType = QueryType.NS;
+        //         break;
+        //     case "5":
+        //         this.queryType = QueryType.CNAME;
+        //         break;
+        //     case "12":
+        //         this.queryType = QueryType.PTR;
+        //         break;
+        //     default:
+        //         System.out.println("Unsupported Query Type");
+        // }
+        switch(qtypeValue) {
+            case 1:
+                this.queryType = QueryType.A;
+                return;
+            case 2:
+                this.queryType = QueryType.NS;
+                return;
+            default:
+                this.queryType = QueryType.OTHER;
+                return;
+        }
+    }
+
+
+    public static String byteArrayToHexString(byte[] byteArray) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : byteArray) {
+            sb.append(Byte.toString(b));
+        }
+        return sb.toString();
+    }
+
+    private int parseQuestionQName() {
+        int countByte = 0;
+        StringBuilder sb = new StringBuilder();
+        while (!Byte.toString(response[countByte+12]).equals("0")) {
+            int byteValue = Integer.parseInt(Byte.toString(response[countByte+12]));
+            if (byteValue > 0 && byteValue < 15) {
+                sb.append('.');
+            } else {
+                sb.append((char) byteValue);
+            }
+            countByte++;
+        }
+        sb.deleteCharAt(0);
+        this.queryDomainName = sb.toString();
+        countByte++;
+        return countByte;
+    }
+
 
     private DNSRecord parseAnswer(int index) {
         DNSRecord result = new DNSRecord(this.AA, this.TC);
@@ -305,12 +378,12 @@ public class DNSMessage {
     }
 
     private String getWordFromIndex(int index) {
-        String word = "";
+        StringBuilder sb = new StringBuilder();
         int wordSize = response[index];
         for (int i = 0; i < wordSize; i++) {
-            word += (char) response[index + i + 1];
+            sb.append((char) response[index + i + 1]);
         }
-        return word;
+        return sb.toString();
     }
 
     private int getBit(byte b, int position) {
@@ -333,5 +406,12 @@ public class DNSMessage {
         } else {
             return QueryType.OTHER;
         }
+    }
+
+    public QueryType getQueryType() {
+        return this.queryType;
+    }
+    public String getQueryDomainName() {
+        return this.queryDomainName;
     }
 }

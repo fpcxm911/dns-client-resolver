@@ -36,7 +36,7 @@ public class DNSClient {
             DatagramSocket socket = new DatagramSocket();
             socket.setSoTimeout(timeout);
             InetAddress inetaddress = InetAddress.getByAddress(resolverIPBytes);
-            DNSResquest request = new DNSResquest(domainName, queryType);
+            DNSRequest request = new DNSRequest(domainName, queryType);
 
             byte[] requestBytes = request.getRequest();
             byte[] responseBytes = new byte[1024];
@@ -103,12 +103,12 @@ public class DNSClient {
             if (enhancedArg1.matches("[a-zA-Z]+")) { // type specified
                 parseQType(enhancedArg1.toLowerCase());
             } else if (enhancedArg1.matches("\\d+")) { // timeout specified
-                timeout = Integer.parseInt(enhancedArg1);
+                timeout = Integer.parseInt(enhancedArg1)*1000;
             }
             if (enhancedArg2.matches("[a-zA-Z]+")) { // type specified
                 parseQType(enhancedArg2.toLowerCase());
             } else if (enhancedArg2.matches("\\d+")) { // timeout specified
-                timeout = Integer.parseInt(enhancedArg2);
+                timeout = Integer.parseInt(enhancedArg2)*1000;
             }
         }
 
