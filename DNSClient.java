@@ -39,7 +39,7 @@ public class DNSClient {
             DNSRequest request = new DNSRequest(domainName, queryType);
 
             byte[] requestBytes = request.getRequest();
-            byte[] responseBytes = new byte[1024];
+            byte[] responseBytes = new byte[MAX_DNS_PACKET_SIZE];
 
             DatagramPacket requestPacket = new DatagramPacket(requestBytes, requestBytes.length, inetaddress, port);
             DatagramPacket responsePacket = new DatagramPacket(responseBytes, responseBytes.length);
@@ -91,7 +91,7 @@ public class DNSClient {
             if (enhancedArg.matches("[a-zA-Z]+")) { // type specified
                 parseQType(enhancedArg.toLowerCase());
             } else if (enhancedArg.matches("\\d+")) { // timeout specified
-                timeout = Integer.parseInt(enhancedArg);
+                timeout = Integer.parseInt(enhancedArg)*1000;
             }
         } else if (argsList.size() == 5) { // two enhanced arguments
             String enhancedArg1 = argsList.get(3);
@@ -103,12 +103,12 @@ public class DNSClient {
             if (enhancedArg1.matches("[a-zA-Z]+")) { // type specified
                 parseQType(enhancedArg1.toLowerCase());
             } else if (enhancedArg1.matches("\\d+")) { // timeout specified
-                timeout = Integer.parseInt(enhancedArg1);
+                timeout = Integer.parseInt(enhancedArg1)*1000;
             }
             if (enhancedArg2.matches("[a-zA-Z]+")) { // type specified
                 parseQType(enhancedArg2.toLowerCase());
             } else if (enhancedArg2.matches("\\d+")) { // timeout specified
-                timeout = Integer.parseInt(enhancedArg2);
+                timeout = Integer.parseInt(enhancedArg2)*1000;
             }
         }
 
