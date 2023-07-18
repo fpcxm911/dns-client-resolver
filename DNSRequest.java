@@ -38,8 +38,7 @@ public class DNSRequest {
 		String[] items = domain.split("\\.");
 		for (int i = 0; i < items.length; i++) {
 			// 1 byte length for the number value and then another for each character
-			// www.unsw.edu.au = 3, w, w, w, 4, u, n, s, w, 3, e, d, u, 2, a, u = 16
-			// byteLength
+			// www.unsw.edu.au = 3, w, w, w, 4, u, n, s, w, 3, e, d, u, 2, a, u = 16 bytes
 			byteLength += items[i].length() + 1;
 		}
 		return byteLength;

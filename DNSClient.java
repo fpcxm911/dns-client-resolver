@@ -39,7 +39,7 @@ public class DNSClient {
             DNSRequest request = new DNSRequest(domainName, queryType);
 
             byte[] requestBytes = request.getRequest();
-            byte[] responseBytes = new byte[1024];
+            byte[] responseBytes = new byte[MAX_DNS_PACKET_SIZE];
 
             DatagramPacket requestPacket = new DatagramPacket(requestBytes, requestBytes.length, inetaddress, port);
             DatagramPacket responsePacket = new DatagramPacket(responseBytes, responseBytes.length);
