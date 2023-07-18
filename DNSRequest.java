@@ -61,10 +61,10 @@ public class DNSRequest {
 
 		// Add Query Type
 		question.put(hexStringToByteArray("000" + hexValueFromQueryType(qtype)));
-		question.put((byte) 0x00);
-
+		
 		// Add Query Class IN
-		question.put((byte) 0x0001);
+		question.put((byte) 0x00);
+		question.put((byte) 0x01);
 
 		return question.array();
 	}
