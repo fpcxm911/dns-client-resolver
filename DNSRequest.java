@@ -48,6 +48,7 @@ public class DNSRequest {
 		ByteBuffer question = ByteBuffer.allocate(qNameLength + 5);
 
 		// first calculate how many bytes needed so we know the size of the array
+
 		String[] items = domain.split("\\.");
 		for (int i = 0; i < items.length; i++) {
 			question.put((byte) items[i].length());

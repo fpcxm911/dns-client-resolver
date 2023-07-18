@@ -14,7 +14,7 @@ public class DNSMessage {
     private String queryDomainName;
 
     public DNSMessage(byte[] messageBytes) {
-        // contructor DNSMessage for DNS request
+        // contructor DNSMessage for DNS request from client
         this.response = messageBytes;
         this.parseHeader();
 
@@ -29,21 +29,22 @@ public class DNSMessage {
 
         // this.validateResponseQuestionType();
         this.parseHeader();
+        this.parseQuestion();
 
         answerRecords = new DNSRecord[ANCount];
         int offSet = requestSize;
         for (int i = 0; i < ANCount; i++) {
-            answerRecords[i] = this.parseAnswer(offSet);
+            answerRecords[i] = this.parseResourceRecord(offSet);
             offSet += answerRecords[i].getByteLength();
         }
 
         for (int i = 0; i < NSCount; i++) {
-            offSet += parseAnswer(offSet).getByteLength();
+            offSet += parseResourceRecord(offSet).getByteLength();
         }
 
         additionalRecords = new DNSRecord[ARCount];
         for (int i = 0; i < ARCount; i++) {
-            additionalRecords[i] = this.parseAnswer(offSet);
+            additionalRecords[i] = this.parseResourceRecord(offSet);
             offSet += additionalRecords[i].getByteLength();
         }
         try {
@@ -56,14 +57,37 @@ public class DNSMessage {
         
     }
 
+    public void outputQuestion() {
+        System.out.println();
+        System.out.println("===>Question Section<===");
+        System.out.println("Query for domain name: "+ this.QueryDomainName);
+        System.out.println("Query type: " + getStrFromQType(this.queryType));
+    }
+    private String getStrFromQType(QueryType queryType) {
+        switch (queryType) {
+            case A:
+                return "A";
+            case MX:
+                return "MX";
+            case CNAME:
+                return "CNAME";
+            case PTR:
+                return "PTR";
+            default:
+                return "OTHER";
+        }
+    }
+
+
     public void outputResponse() {
         System.out.println();
         if (this.ANCount <= 0 || noRecords) {
-            System.out.println("NOTFOUND");
+            System.out.println("No DNS record found");
+
             return;
         }
 
-        System.out.println("***Answer Section (" + this.ANCount + " answerRecords)***");
+        System.out.println("===>Answer Section (" + this.ANCount + " answerRecords)<===");
 
         for (DNSRecord record : answerRecords) {
             record.outputRecord();
@@ -72,7 +96,7 @@ public class DNSMessage {
         System.out.println();
 
         if (this.ARCount > 0) {
-            System.out.println("***Additional Section (" + this.ARCount + " answerRecords)***");
+            System.out.println("===>Additional Section (" + this.ARCount + " answerRecords)<===");
             for (DNSRecord record : additionalRecords) {
                 record.outputRecord();
             }
@@ -233,9 +257,9 @@ public class DNSMessage {
         String domain = "";
         int countByte = index;
 
-        rowDataEntry domainResult = getDomainFromIndex(countByte);
+        DataEntry domainResult = getDomainNameFromIndex(countByte);
         countByte += domainResult.getBytes();
-        domain = domainResult.getDomain();
+        domain = domainResult.getDomainName();
 
         // Name
         result.setName(domain);
@@ -306,8 +330,8 @@ public class DNSMessage {
     }
 
     private String parseNSTypeRDATA(int rdLength, int countByte) {
-        rowDataEntry result = getDomainFromIndex(countByte);
-        String nameServer = result.getDomain();
+        DataEntry result = getDomainNameFromIndex(countByte);
+        String nameServer = result.getDomainName();
 
         return nameServer;
     }
@@ -316,12 +340,12 @@ public class DNSMessage {
         byte[] mxPreference = { this.response[countByte], this.response[countByte + 1] };
         ByteBuffer buf = ByteBuffer.wrap(mxPreference);
         record.setMxPreference(buf.getShort());
-        return getDomainFromIndex(countByte + 2).getDomain();
+        return getDomainNameFromIndex(countByte + 2).getDomainName();
     }
 
     private String parseCNAMETypeRDATA(int rdLength, int countByte) {
-        rowDataEntry result = getDomainFromIndex(countByte);
-        String cname = result.getDomain();
+        DataEntry result = getDomainNameFromIndex(countByte);
+        String cname = result.getDomainName();
 
         return cname;
     }
@@ -346,8 +370,8 @@ public class DNSMessage {
     //     // }
     // }
 
-    private rowDataEntry getDomainFromIndex(int index) {
-        rowDataEntry result = new rowDataEntry();
+    private DataEntry getDomainNameFromIndex(int index) {
+        DataEntry result = new DataEntry();
         int wordSize = response[index];
         String domain = "";
         boolean start = true;
@@ -359,7 +383,7 @@ public class DNSMessage {
             if ((wordSize & 0xC0) == (int) 0xC0) {
                 byte[] offset = { (byte) (response[index] & 0x3F), response[index + 1] };
                 ByteBuffer wrapped = ByteBuffer.wrap(offset);
-                domain += getDomainFromIndex(wrapped.getShort()).getDomain();
+                domain += getDomainNameFromIndex(wrapped.getShort()).getDomainName();
                 index += 2;
                 count += 2;
                 wordSize = 0;
@@ -372,7 +396,7 @@ public class DNSMessage {
             start = false;
 
         }
-        result.setDomain(domain);
+        result.setDomainName(domain);
         result.setBytes(count);
         return result;
     }

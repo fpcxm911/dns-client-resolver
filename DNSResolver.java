@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class DNSResolver {
     private int port;
     private static final int MAX_DNS_PACKET_SIZE = 512;
