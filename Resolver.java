@@ -4,6 +4,7 @@ public class Resolver {
             DNSResolver resolver = new DNSResolver(args);
             resolver.receiveAndResolve();
         } catch (Exception e) {
+            // e.printStackTrace();
             System.out.println(e.getMessage());
         }
     }

@@ -47,6 +47,9 @@ public class DNSRecord {
 			case CNAME:
 				this.outputCNameTypeRecords();
 				break;
+			case PTR:
+				this.outputPTRTypeRecords();
+				break;
 			default:
 				break;
 		}
@@ -55,28 +58,28 @@ public class DNSRecord {
 	private void outputATypeRecords() {
 		String authString = this.auth ? "authoritative" : "non-authoritative";
 		String tcString = this.truncated ? "truncated" : "not-truncated";
-		String resultLine = ("A\t" + this.domainIP + "\t" + authString + "\t" + tcString);
+		String resultLine = ("A\t" + this.name + "\t"+ this.domainIP + "\t" + authString + "\t" + tcString);
 		System.out.println(formatColumns(resultLine));
 	}
 
 	private void outputNSTypeRecords() {
 		String authString = this.auth ? "authoritative" : "non-authoritative";
 		String tcString = this.truncated ? "truncated" : "not-truncated";
-		String resultLine = ("NS\t" + this.domainIP + "\t" + authString + "\t" + tcString);
+		String resultLine = ("NS\t" + this.name + "\t" + this.domainIP + "\t" + authString + "\t" + tcString);
 		System.out.println(formatColumns(resultLine));
 	}	
 
 	private void outputMXTypeRecords() {
 		String authString = this.auth ? "authoritative" : "non-authoritative";
 		String tcString = this.truncated ? "truncated" : "not-truncated";
-		String resultLine = "MX\t" + this.domainIP + "\t" + authString + "\t" + tcString;
+		String resultLine = "MX\t" + this.name + "\t" + this.domainIP + "\t" + authString + "\t" + tcString;
 		System.out.println(formatColumns(resultLine));
 	}
 
 	private void outputCNameTypeRecords() {
 		String authString = this.auth ? "authoritative" : "non-authoritative";
 		String tcString = this.truncated ? "truncated" : "not-truncated";
-		String resultLine = ("CNAME\t" + this.domainIP + "\t" + authString + "\t" + tcString);
+		String resultLine = ("CNAME\t" + this.name + "\t" + this.domainIP + "\t" + authString + "\t" + tcString);
 		System.out.println(formatColumns(resultLine));
 	}
 	
@@ -84,12 +87,12 @@ public class DNSRecord {
 		// TODO Enhanced for PTR records
 		String authString = this.auth ? "authoritative" : "non-authoritative";
 		String tcString = this.truncated ? "truncated" : "not-truncated";
-		String resultLine = ("PTR\t" + this.domainIP + "\t" + authString + "\t" + tcString);
+		String resultLine = ("PTR\t" + this.domainIP + "\t" + authString + "\t" + tcString + "\t" + tcString);
 		System.out.println(formatColumns(resultLine));
 	}
 	private static String formatColumns(String line) {
 		String[] columns = line.split("\\s+");
-		return String.format("%-5s %-35s %-19s %-13s", columns[0], columns[1], columns[2], columns[3]);
+		return String.format("%-5s %-18s %-25s %-19s %-13s", columns[0], columns[1], columns[2], columns[3], columns[4]);
 	}
 
 
